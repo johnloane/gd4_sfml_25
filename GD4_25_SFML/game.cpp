@@ -3,11 +3,14 @@
 #include "constants.hpp"
 
 Game::Game()
-	: m_window(sf::VideoMode({ 640, 480 }), "SFML Refactor"), m_player()
+	: m_window(sf::VideoMode({ 640, 480 }), "SFML Refactor"), m_texture(), m_player()
 {
-	m_player.setRadius(40.f);
-	m_player.setPosition({ 100.f, 100.f });
-	m_player.setFillColor(sf::Color::Cyan);
+	if (!m_texture.loadFromFile("Media/Textures/Eagle.png"))
+	{
+	}
+	m_player = std::make_unique<sf::Sprite>(m_texture);
+	m_player->setTexture(m_texture);
+	m_player->setPosition({ 100.f, 100.f });
 }
 
 void Game::Run()
@@ -65,14 +68,14 @@ void Game::Update(sf::Time delta_time)
 	{
 		movement.x += 1;
 	}
-	m_player.move(Utility::Normalise(movement) * kPlayerSpeed * delta_time.asSeconds());
+	m_player->move(Utility::Normalise(movement) * kPlayerSpeed * delta_time.asSeconds());
 
 }
 
 void Game::Render()
 {
 	m_window.clear();
-	m_window.draw(m_player);
+	m_window.draw(*m_player);
 	m_window.display();
 }
 

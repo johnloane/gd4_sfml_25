@@ -15,7 +15,9 @@ private:
 
 private:
 	sf::RenderWindow m_window;
-	sf::CircleShape m_player;
+	sf::Texture m_texture;
+	std::unique_ptr<sf::Sprite> m_player;
+	
 	bool m_is_moving_up = false;
 	bool m_is_moving_down = false;
 	bool m_is_moving_right = false;
