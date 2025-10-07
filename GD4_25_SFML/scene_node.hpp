@@ -27,6 +27,6 @@ private:
 
 private:
 	std::vector<Ptr> m_children;
-	SceneNode* parent;
+	SceneNode* m_parent;
 };
 

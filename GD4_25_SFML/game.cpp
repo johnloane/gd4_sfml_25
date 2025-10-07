@@ -70,36 +70,6 @@ void Game::Update(sf::Time delta_time)
 
 }
 
-sf::Vector2f SceneNode::GetWorldPosition() const
-{
-	return sf::Vector2f();
-}
-
-sf::Transform SceneNode::GetWorldTransform() const
-{
-	return sf::Transform();
-}
-
-void SceneNode::UpdateCurrent(sf::Time dt)
-{
-}
-
-void SceneNode::UpdateChildren(sf::Time dt)
-{
-}
-
-void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-}
-
-void SceneNode::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
-{
-}
-
-void SceneNode::DrawChildren(sf::RenderTarget& target, sf::RenderStates states) const
-{
-}
-
 
 void Game::Render()
 {
