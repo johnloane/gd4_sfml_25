@@ -1,5 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "resource_holder.hpp"
+#include "texture_id.hpp"
 
 class Game
 {
@@ -15,7 +17,7 @@ private:
 
 private:
 	sf::RenderWindow m_window;
-	sf::Texture m_texture;
+	ResourceHolder<TextureID, sf::Texture> m_textures;
 	std::unique_ptr<sf::Sprite> m_player;
 	
 	bool m_is_moving_up = false;

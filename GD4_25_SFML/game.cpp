@@ -1,15 +1,13 @@
 #include "game.hpp"
 #include "utility.hpp"
 #include "constants.hpp"
+#include "scene_node.hpp"
 
 Game::Game()
-	: m_window(sf::VideoMode({ 640, 480 }), "SFML Refactor"), m_texture(), m_player()
+	: m_window(sf::VideoMode({ 640, 480 }), "SFML Refactor"), m_textures(), m_player()
 {
-	if (!m_texture.loadFromFile("Media/Textures/Eagle.png"))
-	{
-	}
-	m_player = std::make_unique<sf::Sprite>(m_texture);
-	m_player->setTexture(m_texture);
+	m_textures.Load(TextureID::kEagle, "Media/Textures/Eagle.png");
+	m_player = std::make_unique<sf::Sprite>(m_textures.Get(TextureID::kEagle));
 	m_player->setPosition({ 100.f, 100.f });
 }
 
@@ -71,6 +69,37 @@ void Game::Update(sf::Time delta_time)
 	m_player->move(Utility::Normalise(movement) * kPlayerSpeed * delta_time.asSeconds());
 
 }
+
+sf::Vector2f SceneNode::GetWorldPosition() const
+{
+	return sf::Vector2f();
+}
+
+sf::Transform SceneNode::GetWorldTransform() const
+{
+	return sf::Transform();
+}
+
+void SceneNode::UpdateCurrent(sf::Time dt)
+{
+}
+
+void SceneNode::UpdateChildren(sf::Time dt)
+{
+}
+
+void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+}
+
+void SceneNode::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+{
+}
+
+void SceneNode::DrawChildren(sf::RenderTarget& target, sf::RenderStates states) const
+{
+}
+
 
 void Game::Render()
 {
