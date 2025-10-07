@@ -70,7 +70,6 @@ void Game::Update(sf::Time delta_time)
 
 }
 
-
 void Game::Render()
 {
 	m_window.clear();

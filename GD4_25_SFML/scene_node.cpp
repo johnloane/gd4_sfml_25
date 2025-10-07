@@ -1,4 +1,5 @@
 #include "scene_node.hpp"
+#include "entity.hpp"
 
 SceneNode::SceneNode():m_children(), m_parent(nullptr)
 {
@@ -25,36 +26,57 @@ SceneNode::Ptr SceneNode::DetachChild(const SceneNode& node)
 
 void SceneNode::Update(sf::Time dt)
 {
-
+	UpdateCurrent(dt);
+	UpdateChildren(dt);
 }
 
 sf::Vector2f SceneNode::GetWorldPosition() const
 {
-	return sf::Vector2f();
+	return GetWorldTransform() * sf::Vector2f();
 }
 
 sf::Transform SceneNode::GetWorldTransform() const
 {
-	return sf::Transform();
+	sf::Transform transform = sf::Transform::Identity;
+	for (const SceneNode* node = this; node != nullptr; node = node->m_parent)
+	{
+		transform = node->getTransform() * transform;
+	}
+	return transform;
 }
 
 void SceneNode::UpdateCurrent(sf::Time dt)
 {
+	// Do nothing here
 }
 
 void SceneNode::UpdateChildren(sf::Time dt)
 {
+	for (Ptr& child : m_children)
+	{
+		child->Update(dt);
+	}
 }
 
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	//Apply the transform to the current node
+	states.transform *= getTransform();
+	//Draw the nod eand its children with the changed transform
+	DrawCurrent(target, states);
+	DrawChildren(target, states);
 }
 
 void SceneNode::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	// Do nothing
 }
 
 void SceneNode::DrawChildren(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	for (const Ptr& child : m_children)
+	{
+		child->draw(target, states);
+	}
 }
 
