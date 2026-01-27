@@ -144,6 +144,7 @@
     <ClCompile Include="label.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu_state.cpp" />
+    <ClCompile Include="particle_node.cpp" />
     <ClCompile Include="pause_state.cpp" />
     <ClCompile Include="pickup.cpp" />
     <ClCompile Include="player.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="aircraft.hpp" />
     <ClInclude Include="aircraft_type.hpp" />
     <ClInclude Include="application.hpp" />
+    <ClInclude Include="button_type.hpp" />
     <ClInclude Include="button.hpp" />
     <ClInclude Include="command.hpp" />
     <ClInclude Include="command_queue.hpp" />
@@ -179,6 +181,9 @@
     <ClInclude Include="menu_options.hpp" />
     <ClInclude Include="menu_state.hpp" />
     <ClInclude Include="mission_status.hpp" />
+    <ClInclude Include="particle.hpp" />
+    <ClInclude Include="particletype.hpp" />
+    <ClInclude Include="particle_node.hpp" />
     <ClInclude Include="pause_state.hpp" />
     <ClInclude Include="pickup.hpp" />
     <ClInclude Include="pickup_type.hpp" />

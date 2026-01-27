@@ -15,7 +15,7 @@ World::World(sf::RenderWindow& window, FontHolder& font)
 	, m_scene_layers()
 	, m_world_bounds(sf::Vector2f(0.f, 0.f), sf::Vector2f(m_camera.getSize().x, 3000.f))
 	, m_spawn_position(m_camera.getSize().x / 2.f, m_world_bounds.size.y - m_camera.getSize().y/2.f)
-	, m_scroll_speed(-100.f)
+	, m_scroll_speed(-50.f)
 	, m_player_aircraft(nullptr)
 {
 	LoadTextures();
@@ -76,18 +76,10 @@ bool World::HasPlayerReachedEnd() const
 
 void World::LoadTextures()
 {
-	m_textures.Load(TextureID::kEagle, "Media/Textures/Eagle.png");
-	m_textures.Load(TextureID::kRaptor, "Media/Textures/Raptor.png");
-	m_textures.Load(TextureID::kLandscape, "Media/Textures/Desert.png");
-	m_textures.Load(TextureID::kBullet, "Media/Textures/Bullet.png");
-	m_textures.Load(TextureID::kMissile, "Media/Textures/Missile.png");
-
-	m_textures.Load(TextureID::kHealthRefill, "Media/Textures/HealthRefill.png");
-	m_textures.Load(TextureID::kMissileRefill, "Media/Textures/MissileRefill.png");
-	m_textures.Load(TextureID::kFireSpread, "Media/Textures/FireSpread.png");
-	m_textures.Load(TextureID::kFireRate, "Media/Textures/FireRate.png");
+	m_textures.Load(TextureID::kEntities, "Media/Textures/Entities.png");
+	m_textures.Load(TextureID::kExplosion, "Media/Textures/Explosion.png");
 	m_textures.Load(TextureID::kFinishLine, "Media/Textures/FinishLine.png");
-
+	m_textures.Load(TextureID::kJungle, "Media/Textures/Jungle.png");
 }
 
 void World::BuildScene()
@@ -102,13 +94,13 @@ void World::BuildScene()
 	}
 
 	//Prepare the background
-	sf::Texture& texture = m_textures.Get(TextureID::kLandscape);
+	sf::Texture& texture = m_textures.Get(TextureID::kJungle);
 	sf::IntRect textureRect(m_world_bounds);
 	texture.setRepeated(true);
 
 	//Add the background sprite to the world
 	std::unique_ptr<SpriteNode> background_sprite(new SpriteNode(texture, textureRect));
-	background_sprite->setPosition(sf::Vector2f(0, 0));
+	background_sprite->setPosition(sf::Vector2f(m_world_bounds.position.x, m_world_bounds.position.y));
 	m_scene_layers[static_cast<int>(SceneLayers::kBackground)]->AttachChild(std::move(background_sprite));
 
 	//Add the finish line

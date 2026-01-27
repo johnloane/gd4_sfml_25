@@ -7,7 +7,7 @@ namespace
     const std::vector<ProjectileData> Table = InitializeProjectileData();
 }
 
-Projectile::Projectile(ProjectileType type, const TextureHolder& textures) : Entity(1), m_type(type), m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture))
+Projectile::Projectile(ProjectileType type, const TextureHolder& textures) : Entity(1), m_type(type), m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture), Table[static_cast<int>(type)].m_texture_rect)
 {
     Utility::CentreOrigin(m_sprite);
 }

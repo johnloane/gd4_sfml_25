@@ -32,7 +32,7 @@ TextureID ToTextureID(AircraftType type)
 Aircraft::Aircraft(AircraftType type, const TextureHolder& textures, const FontHolder& fonts) 
 	: Entity(Table[static_cast<int>(type)].m_hitpoints) 
 	, m_type(type) 
-	, m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture))
+	, m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture), Table[static_cast<int>(type)].m_texture_rect)
 	, m_health_display(nullptr)
 	, m_missile_display(nullptr)
 	, m_distance_travelled(0.f) 
@@ -176,36 +176,52 @@ void Aircraft::LaunchMissile()
 	}
 }
 
-void Aircraft::CreateBullet(SceneNode& node, const TextureHolder& textures) const
+void Aircraft::CreateBullet(SceneNode& node, const TextureHolder& textures)
 {
 	ProjectileType type = IsAllied() ? ProjectileType::kAlliedBullet : ProjectileType::kEnemyBullet;
 	switch (m_spread_level)
 	{
 	case 1:
-		CreateProjectile(node, type, 0.0f, 0.5f, textures);
+		if (m_is_firing)
+		{
+			CreateProjectile(node, type, 0.0f, 0.5f, textures);
+			m_is_firing = false;
+		}
 		break;
 	case 2:
-		CreateProjectile(node, type, -0.5f, 0.5f, textures);
-		CreateProjectile(node, type, 0.5f, 0.5f, textures);
-		break;
+		if (m_is_firing)
+		{
+			CreateProjectile(node, type, -0.5f, 0.5f, textures);
+			CreateProjectile(node, type, 0.5f, 0.5f, textures);
+			m_is_firing = false;
+			break;
+		}
 	case 3:
-		CreateProjectile(node, type, 0.0f, 0.5f, textures);
-		CreateProjectile(node, type, -0.5f, 0.5f, textures);
-		CreateProjectile(node, type, 0.5f, 0.5f, textures);
-		break;
+		if (m_is_firing)
+		{
+			CreateProjectile(node, type, 0.0f, 0.5f, textures);
+			CreateProjectile(node, type, -0.5f, 0.5f, textures);
+			CreateProjectile(node, type, 0.5f, 0.5f, textures);
+			m_is_firing = false;
+			break;
+		}
 	}
 }
 
-void Aircraft::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures) const
+void Aircraft::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures)
 {
-	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-	sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().size.x, y_offset * m_sprite.getGlobalBounds().size.y);
-	sf::Vector2f velocity(0, projectile->GetMaxSpeed());
+	if (m_is_launching_missile || m_is_firing)
+	{
+		std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
+		sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().size.x, y_offset * m_sprite.getGlobalBounds().size.y);
+		sf::Vector2f velocity(0, projectile->GetMaxSpeed());
 
-	float sign = IsAllied() ? -1.f: 1.f;
-	projectile->setPosition(GetWorldPosition() + offset * sign);
-	projectile->SetVelocity(velocity * sign);
-	node.AttachChild(std::move(projectile));
+		float sign = IsAllied() ? -1.f : 1.f;
+		projectile->setPosition(GetWorldPosition() + offset * sign);
+		projectile->SetVelocity(velocity * sign);
+		node.AttachChild(std::move(projectile));
+		m_is_launching_missile = false;
+	}
 
 }
 
@@ -251,7 +267,6 @@ void Aircraft::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	{
 		commands.Push(m_fire_command);
 		m_fire_countdown += Table[static_cast<int>(m_type)].m_fire_interval / (m_fire_rate + 1.f);
-		m_is_firing = false;
 	}
 	else if (m_fire_countdown > sf::Time::Zero)
 	{
@@ -263,7 +278,7 @@ void Aircraft::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	if (m_is_launching_missile)
 	{
 		commands.Push(m_missile_command);
-		m_is_launching_missile = false;
+		//m_is_launching_missile = false;
 	}
 }
 

@@ -3,6 +3,7 @@
 #include "resource_holder.hpp"
 #include <string>
 #include <SFML/Graphics/Font.hpp>
+#include <iostream>
 
 template<typename Identifier, typename Resource>
 void ResourceHolder<Identifier, Resource>::Load(const Identifier id, const std::string& filename)
