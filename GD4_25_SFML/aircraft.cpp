@@ -45,8 +45,14 @@ Aircraft::Aircraft(AircraftType type, const TextureHolder& textures, const FontH
 	, m_missile_ammo(2)
 	, m_is_marked_for_removal(false)
 	, m_spawned_pickup(false)
+	, m_show_explosion(true)
+	, m_explosion(textures.Get(TextureID::kExplosion))
 {
+	m_explosion.SetFrameSize(sf::Vector2i(256, 256));
+	m_explosion.SetNumFrames(16);
+	m_explosion.SetDuration(sf::seconds(1));
 	Utility::CentreOrigin(m_sprite);
+	Utility::CentreOrigin(m_explosion);
 
 	m_fire_command.category = static_cast<int>(ReceiverCategories::kScene);
 	m_fire_command.action = [this, &textures](SceneNode& node, sf::Time dt)
@@ -232,12 +238,19 @@ sf::FloatRect Aircraft::GetBoundingRect() const
 
 bool Aircraft::IsMarkedForRemoval() const
 {
-	return m_is_marked_for_removal;
+	return IsDestroyed() && (m_explosion.IsFinished() || !m_show_explosion);
 }
 
 void Aircraft::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_sprite, states);
+	if (IsDestroyed() && m_show_explosion)
+	{
+		target.draw(m_explosion, states);
+	}
+	else
+	{
+		target.draw(m_sprite, states);
+	}
 }
 
 void Aircraft::UpdateCurrent(sf::Time dt, CommandQueue& commands)
@@ -245,6 +258,7 @@ void Aircraft::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 	if (IsDestroyed())
 	{
 		CheckPickupDrop(commands);
+		m_explosion.Update(dt);
 		m_is_marked_for_removal = true;
 		return;
 	}

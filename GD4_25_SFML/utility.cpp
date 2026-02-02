@@ -39,6 +39,12 @@ void Utility::CentreOrigin(sf::Text& text)
     text.setOrigin(sf::Vector2f(std::floor(bounds.position.x + bounds.size.x / 2.f), std::floor(bounds.position.y + bounds.size.y / 2.f)));
 }
 
+void Utility::CentreOrigin(Animation& animation)
+{
+    sf::FloatRect bounds = animation.GetLocalBounds();
+    animation.setOrigin(sf::Vector2f(std::floor(bounds.position.x + bounds.size.x / 2.f), std::floor(bounds.position.y + bounds.size.y / 2.f)));
+}
+
 std::string Utility::toString(sf::Keyboard::Scancode key)
 {
     return sf::Keyboard::getDescription(key);

@@ -5,6 +5,7 @@
 #include "text_node.hpp"
 #include "projectile_type.hpp"
 #include "command_queue.hpp"
+#include "animation.hpp"
 
 class Aircraft : public Entity
 {
@@ -40,6 +41,7 @@ private:
 private:
 	AircraftType m_type;
 	sf::Sprite m_sprite;
+	Animation m_explosion;
 
 	TextNode* m_health_display;
 	TextNode* m_missile_display;
@@ -63,6 +65,7 @@ private:
 	sf::Time m_fire_countdown;
 
 	bool m_is_marked_for_removal;
+	bool m_show_explosion;
 
 };
 
