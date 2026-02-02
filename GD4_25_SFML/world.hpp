@@ -5,11 +5,12 @@
 #include "scene_layers.hpp"
 #include "aircraft.hpp"
 #include "command_queue.hpp"
+#include "bloom_effect.hpp"
 
 class World
 {
 public:
-	explicit World(sf::RenderWindow& window, FontHolder& font);
+	explicit World(sf::RenderTarget& output_target, FontHolder& font);
 	void Update(sf::Time dt);
 	void Draw();
 
@@ -50,7 +51,8 @@ private:
 	};
 
 private:
-	sf::RenderWindow& m_window;
+	sf::RenderTarget& m_target;
+	sf::RenderTexture m_scene_texture;
 	sf::View m_camera;
 	TextureHolder m_textures;
 	FontHolder& m_fonts;
@@ -65,5 +67,7 @@ private:
 
 	std::vector<SpawnPoint> m_enemy_spawn_points;
 	std::vector<Aircraft*> m_active_enemies;
+
+	BloomEffect m_bloom_effect;
 };
 
