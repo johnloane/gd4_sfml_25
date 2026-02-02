@@ -8,6 +8,6 @@ struct Particle
 {
 	ParticleType m_type;
 	sf::Vector2f m_position;
-	sf::Color m_colour;
+	sf::Color m_color;
 	sf::Time m_lifetime;
 };
