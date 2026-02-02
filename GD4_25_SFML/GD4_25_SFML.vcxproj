@@ -138,6 +138,7 @@
     <ClCompile Include="component.cpp" />
     <ClCompile Include="container.cpp" />
     <ClCompile Include="data_tables.cpp" />
+    <ClCompile Include="emitter_node.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="game_over_state.cpp" />
     <ClCompile Include="game_state.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="constants.hpp" />
     <ClInclude Include="container.hpp" />
     <ClInclude Include="data_tables.hpp" />
+    <ClInclude Include="emitter_node.hpp" />
     <ClInclude Include="entity.hpp" />
     <ClInclude Include="fontID.hpp" />
     <ClInclude Include="game_over_state.hpp" />
