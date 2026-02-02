@@ -37,6 +37,7 @@ private:
 	bool IsAllied() const;
 	void CreatePickup(SceneNode& node, const TextureHolder& textures);
 	void CheckPickupDrop(CommandQueue& commands);
+	void UpdateRollAnimation();
 
 private:
 	AircraftType m_type;

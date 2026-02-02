@@ -266,6 +266,8 @@ void Aircraft::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 	UpdateTexts();
 	UpdateMovementPattern(dt);
 
+	UpdateRollAnimation();
+
 	//Check if bullets or missiles were fired
 	CheckProjectileLaunch(dt, commands);
 }
@@ -319,5 +321,25 @@ void Aircraft::CheckPickupDrop(CommandQueue& commands)
 	if (!IsAllied() && Utility::RandomInt(kPickupDropChance) == 0 && !m_spawned_pickup)
 	{
 		commands.Push(m_drop_pickup_command);
+	}
+}
+
+void Aircraft::UpdateRollAnimation()
+{
+	if (Table[static_cast<int>(m_type)].m_has_roll_animation)
+	{
+		sf::IntRect textureRect = Table[static_cast<int>(m_type)].m_texture_rect;
+
+		//Roll left: Texture rect is offset once
+		if (GetVelocity().x < 0.f)
+		{
+			textureRect.position.x += textureRect.size.x;
+		}
+		else if (GetVelocity().x > 0.f)
+		{
+			textureRect.position.x += 2 * textureRect.size.x;
+		}
+		m_sprite.setTextureRect(textureRect);
+
 	}
 }
