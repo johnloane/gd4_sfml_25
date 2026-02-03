@@ -114,6 +114,12 @@
     <ClCompile Include="bloom_effect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="music_player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sound_player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utility.hpp">
@@ -267,6 +273,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shader_types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="music_themes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound_effect.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="music_player.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound_player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

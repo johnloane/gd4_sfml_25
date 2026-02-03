@@ -109,7 +109,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)/SFML-3.0.1/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d /s /i "$(ProjectDir)\SFML-3.0.1\bin\*.dll" "$(TargetDir)"</Command>
@@ -147,6 +147,7 @@
     <ClCompile Include="label.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu_state.cpp" />
+    <ClCompile Include="music_player.cpp" />
     <ClCompile Include="particle_node.cpp" />
     <ClCompile Include="pause_state.cpp" />
     <ClCompile Include="pickup.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="projectile.cpp" />
     <ClCompile Include="scene_node.cpp" />
     <ClCompile Include="settings_state.cpp" />
+    <ClCompile Include="sound_player.cpp" />
     <ClCompile Include="sprite_node.cpp" />
     <ClCompile Include="state.cpp" />
     <ClCompile Include="statestack.cpp" />
@@ -188,6 +190,8 @@
     <ClInclude Include="menu_options.hpp" />
     <ClInclude Include="menu_state.hpp" />
     <ClInclude Include="mission_status.hpp" />
+    <ClInclude Include="music_player.hpp" />
+    <ClInclude Include="music_themes.hpp" />
     <ClInclude Include="particle.hpp" />
     <ClInclude Include="particletype.hpp" />
     <ClInclude Include="particle_node.hpp" />
@@ -205,6 +209,8 @@
     <ClInclude Include="scene_node.hpp" />
     <ClInclude Include="settings_state.hpp" />
     <ClInclude Include="shader_types.hpp" />
+    <ClInclude Include="sound_effect.hpp" />
+    <ClInclude Include="sound_player.hpp" />
     <ClInclude Include="sprite_node.hpp" />
     <ClInclude Include="stack_actions.hpp" />
     <ClInclude Include="state.hpp" />
