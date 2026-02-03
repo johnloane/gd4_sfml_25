@@ -35,6 +35,8 @@ namespace gui
 		sf::Sprite m_sprite;
 		sf::Text m_text;
 		bool m_is_toggle;
+
+		SoundPlayer& m_sounds;
 	};
 }
 

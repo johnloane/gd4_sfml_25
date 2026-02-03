@@ -35,6 +35,8 @@ MenuState::MenuState(StateStack& stack, Context context) : State(stack, context)
     m_gui_container.Pack(play_button);
     m_gui_container.Pack(settings_button);
     m_gui_container.Pack(exit_button);
+
+    context.music->Play(MusicThemes::kMenuTheme);
 }
 
 void MenuState::Draw()

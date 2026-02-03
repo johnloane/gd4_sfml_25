@@ -120,6 +120,9 @@
     <ClCompile Include="sound_player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sound_node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utility.hpp">
@@ -285,6 +288,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sound_player.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound_node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,12 +7,14 @@
 #include "pickup.hpp"
 #include "particle_node.hpp"
 #include "particletype.hpp"
+#include "sound_node.hpp"
 
-World::World(sf::RenderTarget& output_target, FontHolder& font)
+World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds)
 	: m_target(output_target)
 	, m_camera(output_target.getDefaultView())
 	, m_textures()
 	, m_fonts(font)
+	, m_sounds(sounds)
 	, m_scene_graph(ReceiverCategories::kNone)
 	, m_scene_layers()
 	, m_world_bounds(sf::Vector2f(0.f, 0.f), sf::Vector2f(m_camera.getSize().x, 3000.f))
@@ -35,6 +37,8 @@ void World::Update(sf::Time dt)
 
 	DestroyEntitiesOutsideView();
 	GuideMissiles();
+
+	UpdateSounds();
 
 	//Process commands from the scenegraph
 	while (!m_command_queue.IsEmpty())
@@ -148,6 +152,10 @@ void World::BuildScene()
 	m_player_aircraft->AttachChild(std::move(right_escort));*/
 
 	AddEnemies();
+
+	//Add sound effect node
+	std::unique_ptr<SoundNode> soundNode(new SoundNode(m_sounds));
+	m_scene_graph.AttachChild(std::move(soundNode));
 }
 
 void World::AdaptPlayerVelocity()
@@ -316,6 +324,7 @@ void World::HandleCollisions()
 			//Collision response
 			pickup.Apply(player);
 			pickup.Destroy();
+			player.PlayLocalSound(m_command_queue, SoundEffect::kCollectPickup);
 		}
 		else if (MatchesCategories(pair, ReceiverCategories::kPlayerAircraft, ReceiverCategories::kEnemyProjectile) || MatchesCategories(pair,ReceiverCategories::kEnemyAircraft, ReceiverCategories::kAlliedProjectile))
 		{
@@ -342,6 +351,17 @@ void World::DestroyEntitiesOutsideView()
 	});
 	m_command_queue.Push(command);
 
+}
+
+void World::UpdateSounds()
+{
+	sf::Vector2f listener_position;
+
+	listener_position = m_camera.getCenter();
+
+	m_sounds.SetListenerPosition(listener_position);
+
+	m_sounds.RemoveStoppedSounds();
 }
 
 

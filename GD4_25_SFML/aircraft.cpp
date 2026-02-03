@@ -8,6 +8,7 @@
 #include "pickup.hpp"
 #include "projectile_type.hpp"
 #include <iostream>
+#include "sound_node.hpp"
 
 
 namespace
@@ -47,6 +48,7 @@ Aircraft::Aircraft(AircraftType type, const TextureHolder& textures, const FontH
 	, m_spawned_pickup(false)
 	, m_show_explosion(true)
 	, m_explosion(textures.Get(TextureID::kExplosion))
+	, m_explosion_began(false)
 {
 	m_explosion.SetFrameSize(sf::Vector2i(256, 256));
 	m_explosion.SetNumFrames(16);
@@ -241,6 +243,20 @@ bool Aircraft::IsMarkedForRemoval() const
 	return IsDestroyed() && (m_explosion.IsFinished() || !m_show_explosion);
 }
 
+void Aircraft::PlayLocalSound(CommandQueue& commands, SoundEffect effect)
+{
+	sf::Vector2f world_position = GetWorldPosition();
+
+	Command command;
+	command.category = static_cast<int>(ReceiverCategories::kSoundEffect);
+	command.action = DerivedAction<SoundNode>(
+		[effect, world_position](SoundNode& node, sf::Time)
+		{
+			node.PlaySound(effect, world_position);
+		});
+	commands.Push(command);
+}
+
 void Aircraft::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (IsDestroyed() && m_show_explosion)
@@ -259,6 +275,13 @@ void Aircraft::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 	{
 		CheckPickupDrop(commands);
 		m_explosion.Update(dt);
+		//Play explosion sound only once
+		if (!m_explosion_began)
+		{
+			SoundEffect soundEffect = (Utility::RandomInt(2) == 0) ? SoundEffect::kExplosion1 : SoundEffect::kExplosion2;
+			PlayLocalSound(commands, soundEffect);
+			m_explosion_began = true;
+		}
 		m_is_marked_for_removal = true;
 		return;
 	}
@@ -281,6 +304,7 @@ void Aircraft::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
 
 	if (m_is_firing && m_fire_countdown <= sf::Time::Zero)
 	{
+		PlayLocalSound(commands, IsAllied() ? SoundEffect::kEnemyGunfire : SoundEffect::kAlliedGunfire);
 		commands.Push(m_fire_command);
 		m_fire_countdown += Table[static_cast<int>(m_type)].m_fire_interval / (m_fire_rate + 1.f);
 	}
@@ -293,6 +317,7 @@ void Aircraft::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	//Missile launch
 	if (m_is_launching_missile)
 	{
+		PlayLocalSound(commands, SoundEffect::kLaunchMissile);
 		commands.Push(m_missile_command);
 		//m_is_launching_missile = false;
 	}

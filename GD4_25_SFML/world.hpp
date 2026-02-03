@@ -6,11 +6,12 @@
 #include "aircraft.hpp"
 #include "command_queue.hpp"
 #include "bloom_effect.hpp"
+#include "sound_player.hpp"
 
 class World
 {
 public:
-	explicit World(sf::RenderTarget& output_target, FontHolder& font);
+	explicit World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds);
 	void Update(sf::Time dt);
 	void Draw();
 
@@ -38,6 +39,8 @@ private:
 
 	void DestroyEntitiesOutsideView();
 
+	void UpdateSounds();
+
 private:
 	struct SpawnPoint
 	{
@@ -56,6 +59,7 @@ private:
 	sf::View m_camera;
 	TextureHolder m_textures;
 	FontHolder& m_fonts;
+	SoundPlayer& m_sounds;
 	SceneNode m_scene_graph;
 	std::array<SceneNode*, static_cast<int>(SceneLayers::kLayerCount)> m_scene_layers;
 	sf::FloatRect m_world_bounds;

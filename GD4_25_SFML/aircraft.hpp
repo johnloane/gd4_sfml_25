@@ -28,6 +28,7 @@ public:
 
 	sf::FloatRect GetBoundingRect() const override;
 	bool IsMarkedForRemoval() const override;
+	void PlayLocalSound(CommandQueue& commands, SoundEffect effect);
 
 private:
 	virtual void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -67,6 +68,7 @@ private:
 
 	bool m_is_marked_for_removal;
 	bool m_show_explosion;
+	bool m_explosion_began;
 
 };
 
