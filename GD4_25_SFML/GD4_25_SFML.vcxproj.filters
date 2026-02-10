@@ -293,6 +293,9 @@
     <ClInclude Include="sound_node.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="network_protocol.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource_holder.inl">

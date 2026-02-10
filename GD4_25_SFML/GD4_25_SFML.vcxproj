@@ -193,6 +193,7 @@
     <ClInclude Include="mission_status.hpp" />
     <ClInclude Include="music_player.hpp" />
     <ClInclude Include="music_themes.hpp" />
+    <ClInclude Include="network_protocol.hpp" />
     <ClInclude Include="particle.hpp" />
     <ClInclude Include="particletype.hpp" />
     <ClInclude Include="particle_node.hpp" />
