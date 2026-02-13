@@ -109,7 +109,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)/SFML-3.0.1/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-graphics-d.lib;sfml-audio-d.lib;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d /s /i "$(ProjectDir)\SFML-3.0.1\bin\*.dll" "$(TargetDir)"</Command>
@@ -143,6 +143,7 @@
     <ClCompile Include="emitter_node.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="game_over_state.cpp" />
+    <ClCompile Include="game_server.cpp" />
     <ClCompile Include="game_state.cpp" />
     <ClCompile Include="label.cpp" />
     <ClCompile Include="main.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="entity.hpp" />
     <ClInclude Include="fontID.hpp" />
     <ClInclude Include="game_over_state.hpp" />
+    <ClInclude Include="game_server.hpp" />
     <ClInclude Include="game_state.hpp" />
     <ClInclude Include="label.hpp" />
     <ClInclude Include="menu_options.hpp" />

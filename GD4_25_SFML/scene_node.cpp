@@ -2,6 +2,7 @@
 #include "entity.hpp"
 #include "aircraft.hpp"
 #include "utility.hpp"
+#include <iostream>
 
 SceneNode::SceneNode(ReceiverCategories category):m_children(), m_parent(nullptr), m_default_category(category)
 {
@@ -51,8 +52,11 @@ void SceneNode::OnCommand(const Command& command, sf::Time dt)
 {
 	//Is this command for me. If so execute it
 	//Regardless of answer send to all children
+	
 	if (command.category & GetCategory())
 	{
+		std::cout << command.category << std::endl;
+		std::cout << GetCategory() << std::endl;
 		command.action(*this, dt);
 	}
 
