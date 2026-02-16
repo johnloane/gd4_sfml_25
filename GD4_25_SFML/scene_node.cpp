@@ -55,8 +55,6 @@ void SceneNode::OnCommand(const Command& command, sf::Time dt)
 	
 	if (command.category & GetCategory())
 	{
-		std::cout << command.category << std::endl;
-		std::cout << GetCategory() << std::endl;
 		command.action(*this, dt);
 	}
 

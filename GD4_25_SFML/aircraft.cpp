@@ -9,6 +9,7 @@
 #include "projectile_type.hpp"
 #include <iostream>
 #include "sound_node.hpp"
+#include "network_node.hpp"
 
 
 namespace
@@ -25,6 +26,9 @@ TextureID ToTextureID(AircraftType type)
 		break;
 	case AircraftType::kRaptor:
 		return TextureID::kRaptor;
+		break;
+	case AircraftType::kAvenger:
+		return TextureID::kAvenger;
 		break;
 	}
 	return TextureID::kEagle;
@@ -49,6 +53,8 @@ Aircraft::Aircraft(AircraftType type, const TextureHolder& textures, const FontH
 	, m_show_explosion(true)
 	, m_explosion(textures.Get(TextureID::kExplosion))
 	, m_explosion_began(false)
+	, m_pickups_enabled(true)
+	, m_identifier(0)
 {
 	m_explosion.SetFrameSize(sf::Vector2i(256, 256));
 	m_explosion.SetNumFrames(16);
@@ -82,10 +88,36 @@ Aircraft::Aircraft(AircraftType type, const TextureHolder& textures, const FontH
 	{
 		std::string* missile_ammo = new std::string("");
 		std::unique_ptr<TextNode> missile_display(new TextNode(fonts, *missile_ammo));
+		missile_display->setPosition(sf::Vector2f(0.f, 70.f));
 		m_missile_display = missile_display.get();
 		AttachChild(std::move(missile_display));
 	}
 	UpdateTexts();
+}
+
+int Aircraft::GetMissileAmmo() const
+{
+	return m_missile_ammo;
+}
+
+void Aircraft::SetMissileAmmo(int ammo)
+{
+	m_missile_ammo = ammo;
+}
+
+void Aircraft::DisablePickups()
+{
+	m_pickups_enabled = false;
+}
+
+int	Aircraft::GetIdentifier()
+{
+	return m_identifier;
+}
+
+void Aircraft::SetIdentifier(int identifier)
+{
+	m_identifier = identifier;
 }
 
 unsigned int Aircraft::GetCategory() const
@@ -120,13 +152,19 @@ void Aircraft::CollectMissile(unsigned int count)
 
 void Aircraft::UpdateTexts()
 {
-	m_health_display->SetString(std::to_string(GetHitPoints()) + "HP");
+	if (IsDestroyed())
+	{
+		m_health_display->SetString("");
+	}
+	else
+	{
+		m_health_display->SetString(std::to_string(GetHitPoints()) + "HP");
+	}
 	m_health_display->setPosition(sf::Vector2f(0.f, 50.f));
 	m_health_display->setRotation(-getRotation());
 
 	if (m_missile_display)
 	{
-		m_missile_display->setPosition(sf::Vector2f(0.f, 70.f));
 		if (m_missile_ammo == 0)
 		{
 			m_missile_display->SetString("");
@@ -217,20 +255,15 @@ void Aircraft::CreateBullet(SceneNode& node, const TextureHolder& textures)
 }
 
 void Aircraft::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures)
-{
-	if (m_is_launching_missile || m_is_firing)
-	{
-		std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
-		sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().size.x, y_offset * m_sprite.getGlobalBounds().size.y);
-		sf::Vector2f velocity(0, projectile->GetMaxSpeed());
+{	
+	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
+	sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().size.x, y_offset * m_sprite.getGlobalBounds().size.y);
+	sf::Vector2f velocity(0, projectile->GetMaxSpeed());
 
-		float sign = IsAllied() ? -1.f : 1.f;
-		projectile->setPosition(GetWorldPosition() + offset * sign);
-		projectile->SetVelocity(velocity * sign);
-		node.AttachChild(std::move(projectile));
-		m_is_launching_missile = false;
-	}
-
+	float sign = IsAllied() ? -1.f : 1.f;
+	projectile->setPosition(GetWorldPosition() + offset * sign);
+	projectile->SetVelocity(velocity * sign);
+	node.AttachChild(std::move(projectile));	
 }
 
 sf::FloatRect Aircraft::GetBoundingRect() const
@@ -280,6 +313,21 @@ void Aircraft::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 		{
 			SoundEffect soundEffect = (Utility::RandomInt(2) == 0) ? SoundEffect::kExplosion1 : SoundEffect::kExplosion2;
 			PlayLocalSound(commands, soundEffect);
+
+			//Emit network game action for enemy explodes
+			if (!IsAllied())
+			{
+				sf::Vector2f position = GetWorldPosition();
+
+				Command command;
+				command.category = static_cast<int>(ReceiverCategories::kNetwork);
+				command.action = DerivedAction<NetworkNode>([position](NetworkNode& node, sf::Time)
+					{
+						node.NotifyGameAction(GameActions::kEnemyExplode, position);
+					});
+
+				commands.Push(command);
+			}
 			m_explosion_began = true;
 		}
 		m_is_marked_for_removal = true;
@@ -319,7 +367,7 @@ void Aircraft::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
 	{
 		PlayLocalSound(commands, SoundEffect::kLaunchMissile);
 		commands.Push(m_missile_command);
-		//m_is_launching_missile = false;
+		m_is_launching_missile = false;
 	}
 }
 
@@ -328,17 +376,19 @@ bool Aircraft::IsAllied() const
 	return m_type == AircraftType::kEagle;
 }
 
+void Aircraft::Remove()
+{
+	Entity::Remove();
+	m_show_explosion = false;
+}
+
 void Aircraft::CreatePickup(SceneNode& node, const TextureHolder& textures)
 {
-	if (!m_spawned_pickup)
-	{
-		auto type = static_cast<PickupType>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
-		std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
-		pickup->setPosition(GetWorldPosition());
-		pickup->SetVelocity(0.f, 0.f);
-		node.AttachChild(std::move(pickup));
-	}
-	m_spawned_pickup = true;
+	auto type = static_cast<PickupType>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
+	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+	pickup->setPosition(GetWorldPosition());
+	pickup->SetVelocity(0.f, 0.f);
+	node.AttachChild(std::move(pickup));
 }
 
 void Aircraft::CheckPickupDrop(CommandQueue& commands)
@@ -347,6 +397,7 @@ void Aircraft::CheckPickupDrop(CommandQueue& commands)
 	{
 		commands.Push(m_drop_pickup_command);
 	}
+	m_spawned_pickup = true;
 }
 
 void Aircraft::UpdateRollAnimation()

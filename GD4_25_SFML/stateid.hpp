@@ -6,6 +6,10 @@ enum class StateID
 	kMenu,
 	kGame,
 	kPause,
+	kNetworkPause,
 	kSettings,
-	kGameOver
+	kGameOver,
+	kMissionSuccess,
+	kHostGame,
+	kJoinGame
 };

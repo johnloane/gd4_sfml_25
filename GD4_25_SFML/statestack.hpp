@@ -13,6 +13,8 @@ public:
 	explicit StateStack(State::Context context);
 	template<typename T>
 	void RegisterState(StateID state_id);
+	template <typename T, typename Param1>
+	void RegisterState(StateID state_id, Param1 arg1);
 	void Update(sf::Time dt);
 	void Draw();
 	void HandleEvent(const sf::Event& event);
@@ -48,6 +50,15 @@ void StateStack::RegisterState(StateID state_id)
 	m_state_factory[state_id] = [this]()
 		{
 			return State::Ptr(new T(*this, m_context));
+		};
+}
+
+template <typename T, typename Param1>
+void StateStack::RegisterState(StateID state_id, Param1 arg1)
+{
+	m_state_factory[state_id] = [this, arg1]()
+		{
+			return State::Ptr(new T(*this, m_context, arg1));
 		};
 }
 

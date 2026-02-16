@@ -7,18 +7,38 @@
 #include "command_queue.hpp"
 #include "bloom_effect.hpp"
 #include "sound_player.hpp"
+#include "sprite_node.hpp"
+
+#include <array>
+#include "pickup_type.hpp"
+#include "network_node.hpp"
 
 class World
 {
 public:
-	explicit World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds);
+	explicit World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds, bool networked = false);
 	void Update(sf::Time dt);
 	void Draw();
 
+	sf::FloatRect GetViewBounds() const;
 	CommandQueue& GetCommandQueue();
+
+	Aircraft* AddAircraft(int identifier);
+	void RemoveAircraft(int identifier);
+	void SetCurrentBattleFieldPosition(float line_y);
+	void SetWorldHeight(float height);
+
+	void AddEnemy(AircraftType type, float relx, float rely);
+	void SortEnemies();
 
 	bool HasAlivePlayer() const;
 	bool HasPlayerReachedEnd() const;
+
+	void SetWorldScrollCompensation(float compensation);
+	Aircraft* GetAircraft(int identifier) const;
+	sf::FloatRect GetBattleFieldBounds() const;
+	void CreatePickup(sf::Vector2f position, PickupType type);
+	bool PollGameAction(GameActions::Action& out);
 
 private:
 	void LoadTextures();
@@ -28,10 +48,6 @@ private:
 
 	void SpawnEnemies();
 	void AddEnemies();
-	void AddEnemy(AircraftType type, float relx, float rely);
-
-	sf::FloatRect GetViewBounds() const;
-	sf::FloatRect GetBattleFieldBounds() const;
 
 	void GuideMissiles();
 
@@ -65,7 +81,9 @@ private:
 	sf::FloatRect m_world_bounds;
 	sf::Vector2f m_spawn_position;
 	float m_scroll_speed;
-	Aircraft* m_player_aircraft;
+	float m_scrollspeed_compensation;
+
+	std::vector<Aircraft*> m_player_aircraft;
 
 	CommandQueue m_command_queue;
 
@@ -73,5 +91,8 @@ private:
 	std::vector<Aircraft*> m_active_enemies;
 
 	BloomEffect m_bloom_effect;
+	bool m_networked_world;
+	NetworkNode* m_network_node;
+	SpriteNode* m_finish_sprite;
 };
 

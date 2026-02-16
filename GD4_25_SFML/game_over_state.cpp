@@ -2,21 +2,14 @@
 #include "utility.hpp"
 #include "constants.hpp"
 
-GameOverState::GameOverState(StateStack& stack, Context context)
+GameOverState::GameOverState(StateStack& stack, Context context, const std::string& text)
     : State(stack, context)
     , m_game_over_text(context.fonts->Get(FontID::kMain))
     , m_elapsed_time(sf::Time::Zero)
 {
     sf::Vector2f window_size(context.window->getSize());
 
-    if (context.player->GetMissionStatus() == MissionStatus::kMissionSuccess)
-    {
-        m_game_over_text.setString("Mission Success");
-    }
-    else
-    {
-        m_game_over_text.setString("Mission Failure");
-    }
+    m_game_over_text.setString(text);
 
     m_game_over_text.setCharacterSize(70);
     Utility::CentreOrigin(m_game_over_text);

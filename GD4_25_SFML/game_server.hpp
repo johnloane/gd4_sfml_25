@@ -25,7 +25,7 @@ private:
 		sf::Time m_last_packet_time;
 		std::vector<uint8_t> m_aircraft_identifiers;
 		bool m_ready;
-		bool m_time_out;
+		bool m_timed_out;
 	};
 
 	struct AircraftInfo

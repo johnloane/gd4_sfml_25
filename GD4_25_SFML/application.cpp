@@ -7,8 +7,13 @@
 #include "pause_state.hpp"
 #include "settings_state.hpp"
 #include "game_over_state.hpp"
+#include "multiplayer_gamestate.hpp"
 
-Application::Application() : m_window(sf::VideoMode({ 1024, 768 }), "States", sf::Style::Close), m_stack(State::Context(m_window, m_textures, m_fonts, m_player, m_music, m_sound))
+Application::Application() 
+	: m_window(sf::VideoMode({ 1024, 768 }), "States", sf::Style::Close)
+	, m_key_binding_1(1)
+	, m_key_binding_2(2)
+	, m_stack(State::Context(m_window, m_textures, m_fonts, m_music, m_sound, m_key_binding_1, m_key_binding_2))
 {
 	m_window.setKeyRepeatEnabled(false);
 	m_fonts.Load(FontID::kMain, "Media/Fonts/Sansation.ttf");
@@ -72,9 +77,13 @@ void Application::RegisterStates()
 	m_stack.RegisterState<TitleState>(StateID::kTitle);
 	m_stack.RegisterState<MenuState>(StateID::kMenu);
 	m_stack.RegisterState<GameState>(StateID::kGame);
+	m_stack.RegisterState<MultiplayerGameState>(StateID::kHostGame, true);
+	m_stack.RegisterState<MultiplayerGameState>(StateID::kJoinGame, false);
 	m_stack.RegisterState<PauseState>(StateID::kPause);
+	m_stack.RegisterState<PauseState>(StateID::kNetworkPause, true);
 	m_stack.RegisterState<SettingsState>(StateID::kSettings);
-	m_stack.RegisterState<GameOverState>(StateID::kGameOver);
+	m_stack.RegisterState<GameOverState>(StateID::kGameOver, "Mission Failed!");
+	m_stack.RegisterState<GameOverState>(StateID::kMissionSuccess, "Mission Successful!");
 }
 
 
