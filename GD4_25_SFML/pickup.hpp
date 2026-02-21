@@ -9,8 +9,8 @@ class Pickup : public Entity
 public:
 	Pickup(PickupType type, const TextureHolder& textures);
 	virtual unsigned int GetCategory() const override;
-	void Apply(Aircraft& player);
-	virtual void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	void Apply(Aircraft& player) const;
+	virtual void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 	virtual sf::FloatRect GetBoundingRect() const;
 
 private:

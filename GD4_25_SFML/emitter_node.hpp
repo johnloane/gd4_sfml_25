@@ -7,6 +7,7 @@ class EmitterNode : public SceneNode
 {
 public:
 	explicit EmitterNode(ParticleType type);
+	//virtual unsigned int GetCategory() const override;
 
 private:
 	virtual void UpdateCurrent(sf::Time dt, CommandQueue& commands);

@@ -50,7 +50,7 @@ std::string Utility::toString(sf::Keyboard::Scancode key)
     return sf::Keyboard::getDescription(key);
 }
 
-double Utility::toRadians(double degrees)
+double Utility::ToRadians(double degrees)
 {
     return (degrees * M_PI)/180;
 }

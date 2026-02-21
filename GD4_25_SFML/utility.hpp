@@ -9,7 +9,7 @@ public:
 	static void CentreOrigin(sf::Text& text);
 	static void CentreOrigin(Animation& animation);
 	static std::string toString(sf::Keyboard::Scancode key);
-	static double toRadians(double degrees);
+	static double ToRadians(double degrees);
 	static double ToDegrees(double angle);
 	static int RandomInt(int exclusive_max);
 	static int Length(sf::Vector2f vector);

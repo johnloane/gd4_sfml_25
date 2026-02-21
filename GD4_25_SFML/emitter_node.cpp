@@ -8,6 +8,11 @@ EmitterNode::EmitterNode(ParticleType type)
 {
 }
 
+//unsigned int EmitterNode::GetCategory() const
+//{
+//	return static_cast<int>(ReceiverCategories::kNone);
+//}
+
 void EmitterNode::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	if (m_particle_system)

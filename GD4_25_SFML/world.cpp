@@ -42,7 +42,7 @@ void World::SetWorldScrollCompensation(float compensation)
 void World::Update(sf::Time dt)
 {
 	//Scroll the world
-	m_camera.move(sf::Vector2f(0, m_scroll_speed * dt.asSeconds()));
+	m_camera.move(sf::Vector2f(0, m_scroll_speed * dt.asSeconds() * m_scrollspeed_compensation));
 
 	for (Aircraft* a : m_player_aircraft)
 	{
@@ -51,8 +51,6 @@ void World::Update(sf::Time dt)
 
 	DestroyEntitiesOutsideView();
 	GuideMissiles();
-
-	UpdateSounds();
 
 	//Process commands from the scenegraph
 	while (!m_command_queue.IsEmpty())
@@ -71,6 +69,7 @@ void World::Update(sf::Time dt)
 
 	m_scene_graph.Update(dt, m_command_queue);
 	AdaptPlayerPosition();
+	UpdateSounds();
 }
 
 
@@ -104,7 +103,7 @@ Aircraft* World::GetAircraft(int identifier) const
 	return nullptr;
 }
 
-void World::RemoveAircraft(int identifier)
+void World::RemoveAircraft(uint8_t identifier)
 {
 	Aircraft* aircraft = GetAircraft(identifier);
 	if (aircraft)
@@ -114,10 +113,11 @@ void World::RemoveAircraft(int identifier)
 	}
 }
 
-Aircraft* World::AddAircraft(int identifier)
+Aircraft* World::AddAircraft(uint8_t identifier)
 {
 	std::unique_ptr<Aircraft> player(new Aircraft(AircraftType::kEagle, m_textures, m_fonts));
 	player->setPosition(m_camera.getCenter());
+	std::cout << "World::AddAircraft " << +identifier << std::endl;
 	player->SetIdentifier(identifier);
 
 	m_player_aircraft.emplace_back(player.get());
@@ -182,7 +182,7 @@ void World::BuildScene()
 	//Initialise the different layers
 	for (int i = 0; i < static_cast<int>(SceneLayers::kLayerCount); i++)
 	{
-		ReceiverCategories category = (i == static_cast<int>(SceneLayers::kLowerAir)) ? ReceiverCategories::kScene : ReceiverCategories::kNone;
+		ReceiverCategories category = (i == static_cast<int>(SceneLayers::kUpperAir)) ? ReceiverCategories::kScene : ReceiverCategories::kNone;
 		SceneNode::Ptr layer(new SceneNode(category));
 		m_scene_layers[i] = layer.get();
 		m_scene_graph.AttachChild(std::move(layer));
@@ -198,13 +198,14 @@ void World::BuildScene()
 
 	//Add the background sprite to the world
 	std::unique_ptr<SpriteNode> background_sprite(new SpriteNode(texture, texture_rect));
-	background_sprite->setPosition(sf::Vector2f(m_world_bounds.position.x, m_world_bounds.position.y));
+	background_sprite->setPosition(sf::Vector2f(m_world_bounds.position.x, m_world_bounds.position.y - view_height));
 	m_scene_layers[static_cast<int>(SceneLayers::kBackground)]->AttachChild(std::move(background_sprite));
 
 	//Add the finish line
 	sf::Texture& finish_texture = m_textures.Get(TextureID::kFinishLine);
 	std::unique_ptr<SpriteNode> finish_sprite(new SpriteNode(finish_texture));
 	finish_sprite->setPosition(sf::Vector2f(0.f, -76.f));
+	m_finish_sprite = finish_sprite.get();
 	m_scene_layers[static_cast<int>(SceneLayers::kBackground)]->AttachChild(std::move(finish_sprite));
 
 	//Add the particle nodes to the scene
@@ -222,8 +223,6 @@ void World::BuildScene()
 	right_escort->setPosition(sf::Vector2f(80.f, 50.f));
 	m_player_aircraft->AttachChild(std::move(right_escort));*/
 
-	AddEnemies();
-
 	//Add sound effect node
 	std::unique_ptr<SoundNode> soundNode(new SoundNode(m_sounds));
 	m_scene_graph.AttachChild(std::move(soundNode));
@@ -234,6 +233,7 @@ void World::BuildScene()
 		m_network_node = network_node.get();
 		m_scene_graph.AttachChild(std::move(network_node));
 	}
+	AddEnemies();
 }
 
 void World::AdaptPlayerVelocity()
@@ -255,14 +255,14 @@ void World::AdaptPlayerVelocity()
 void World::AdaptPlayerPosition()
 {
 	//keep player on the screen
-	sf::FloatRect view_bounds(m_camera.getCenter() - m_camera.getSize() / 2.f, m_camera.getSize());
+	sf::FloatRect view_bounds = GetViewBounds();
 	const float border_distance = 40.f;
 
 	for (Aircraft* aircraft : m_player_aircraft)
 	{
 		sf::Vector2f position = aircraft->getPosition();
-		position.x = std::min(position.x, view_bounds.size.x - border_distance);
-		position.x = std::max(position.x, border_distance);
+		position.x = std::min(position.x, view_bounds.position.x + view_bounds.size.x - border_distance);
+		position.x = std::max(position.x, view_bounds.position.x + border_distance);
 		position.y = std::min(position.y, view_bounds.position.y + view_bounds.size.y - border_distance);
 		position.y = std::max(position.y, view_bounds.position.y + border_distance);
 		aircraft->setPosition(position);
@@ -346,7 +346,7 @@ void World::SortEnemies()
 
 sf::FloatRect World::GetViewBounds() const
 {
-	return sf::FloatRect(m_camera.getCenter() - m_camera.getSize() / 2.f, m_camera.getSize());;
+	return sf::FloatRect(m_camera.getCenter() - m_camera.getSize() / 2.f, m_camera.getSize());
 }
 
 sf::FloatRect World::GetBattleFieldBounds() const

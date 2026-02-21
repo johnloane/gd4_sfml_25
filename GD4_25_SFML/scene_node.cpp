@@ -1,8 +1,5 @@
 #include "scene_node.hpp"
-#include "entity.hpp"
-#include "aircraft.hpp"
 #include "utility.hpp"
-#include <iostream>
 
 SceneNode::SceneNode(ReceiverCategories category):m_children(), m_parent(nullptr), m_default_category(category)
 {
@@ -24,7 +21,7 @@ SceneNode::Ptr SceneNode::DetachChild(const SceneNode& node)
 	Ptr result = std::move(*found);
 	result->m_parent = nullptr;
 	m_children.erase(found);
-	return result;
+	return Ptr();
 }
 
 void SceneNode::Update(sf::Time dt, CommandQueue& commands)
@@ -129,7 +126,7 @@ void SceneNode::DrawChildren(sf::RenderTarget& target, sf::RenderStates states) 
 
 unsigned int SceneNode::GetCategory() const
 {
-	return static_cast<unsigned int>(ReceiverCategories::kScene);
+	return static_cast<unsigned int>(m_default_category);
 }
 
 void SceneNode::CheckNodeCollision(SceneNode& node, std::set<Pair>& collision_pairs)

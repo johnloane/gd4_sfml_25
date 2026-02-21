@@ -14,7 +14,7 @@ public:
 	virtual bool HandleEvent(const sf::Event& event);
 	virtual void OnActivate();
 	void OnDestroy();
-	void DisableAllRealtimeActions();
+	void DisableAllRealtimeActions(bool enable);
 
 private:
 	void UpdateBroadcastMessage(sf::Time elpased_time);
@@ -28,7 +28,7 @@ private:
 	sf::RenderWindow& m_window;
 	TextureHolder& m_texture_holder;
 
-	std::map<int, PlayerPtr> m_players;
+	std::map<uint8_t, PlayerPtr> m_players;
 	std::vector<uint8_t> m_local_player_identifiers;
 	sf::TcpSocket m_socket;
 	bool m_connected;

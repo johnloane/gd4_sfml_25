@@ -43,7 +43,7 @@ bool SettingsState::HandleEvent(const sf::Event& event)
     bool is_key_binding = false;
 
     //Iterate through all of the key binding buttons to see if they are being pressed, waiting for input from the user
-    for (std::size_t action = 0; action < static_cast<int>(Action::kActionCount); ++action)
+    for (std::size_t action = 0; action < 2*(static_cast<int>(Action::kActionCount)); ++action)
     {
         if (m_binding_buttons[action]->IsActive())
         {

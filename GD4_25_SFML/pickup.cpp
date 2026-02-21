@@ -20,7 +20,7 @@ unsigned int Pickup::GetCategory() const
     return static_cast<int>(ReceiverCategories::kPickup);
 }
 
-void Pickup::Apply(Aircraft& player)
+void Pickup::Apply(Aircraft& player) const
 {
     Table[static_cast<int>(m_type)].m_action(player);
 }

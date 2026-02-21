@@ -110,12 +110,12 @@ void Aircraft::DisablePickups()
 	m_pickups_enabled = false;
 }
 
-int	Aircraft::GetIdentifier()
+uint8_t	Aircraft::GetIdentifier()
 {
 	return m_identifier;
 }
 
-void Aircraft::SetIdentifier(int identifier)
+void Aircraft::SetIdentifier(uint8_t identifier)
 {
 	m_identifier = identifier;
 }
@@ -191,7 +191,7 @@ void Aircraft::UpdateMovementPattern(sf::Time dt)
 
 		//Compute the velocity
 		//Add 90 to move down the screen, 0 degrees is to the right
-		double radians = Utility::toRadians(directions[m_directions_index].m_angle + 90.f);
+		double radians = Utility::ToRadians(directions[m_directions_index].m_angle + 90.f);
 		float vx = GetMaxSpeed() * std::cos(radians);
 		float vy = GetMaxSpeed() * std::sin(radians);
 
@@ -222,39 +222,27 @@ void Aircraft::LaunchMissile()
 	}
 }
 
-void Aircraft::CreateBullet(SceneNode& node, const TextureHolder& textures)
+void Aircraft::CreateBullet(SceneNode& node, const TextureHolder& textures) const
 {
 	ProjectileType type = IsAllied() ? ProjectileType::kAlliedBullet : ProjectileType::kEnemyBullet;
 	switch (m_spread_level)
 	{
 	case 1:
-		if (m_is_firing)
-		{
-			CreateProjectile(node, type, 0.0f, 0.5f, textures);
-			m_is_firing = false;
-		}
+		CreateProjectile(node, type, 0.0f, 0.5f, textures);
 		break;
 	case 2:
-		if (m_is_firing)
-		{
-			CreateProjectile(node, type, -0.5f, 0.5f, textures);
-			CreateProjectile(node, type, 0.5f, 0.5f, textures);
-			m_is_firing = false;
-			break;
-		}
+		CreateProjectile(node, type, -0.5f, 0.5f, textures);
+		CreateProjectile(node, type, 0.5f, 0.5f, textures);	
+		break;
 	case 3:
-		if (m_is_firing)
-		{
-			CreateProjectile(node, type, 0.0f, 0.5f, textures);
-			CreateProjectile(node, type, -0.5f, 0.5f, textures);
-			CreateProjectile(node, type, 0.5f, 0.5f, textures);
-			m_is_firing = false;
-			break;
-		}
+		CreateProjectile(node, type, 0.0f, 0.5f, textures);
+		CreateProjectile(node, type, -0.5f, 0.5f, textures);
+		CreateProjectile(node, type, 0.5f, 0.5f, textures);
+		break;
 	}
 }
 
-void Aircraft::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures)
+void Aircraft::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures) const
 {	
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().size.x, y_offset * m_sprite.getGlobalBounds().size.y);
@@ -330,7 +318,6 @@ void Aircraft::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 			}
 			m_explosion_began = true;
 		}
-		m_is_marked_for_removal = true;
 		return;
 	}
 	Entity::UpdateCurrent(dt, commands);
@@ -355,6 +342,7 @@ void Aircraft::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
 		PlayLocalSound(commands, IsAllied() ? SoundEffect::kEnemyGunfire : SoundEffect::kAlliedGunfire);
 		commands.Push(m_fire_command);
 		m_fire_countdown += Table[static_cast<int>(m_type)].m_fire_interval / (m_fire_rate + 1.f);
+		m_is_firing = false;
 	}
 	else if (m_fire_countdown > sf::Time::Zero)
 	{
@@ -382,7 +370,7 @@ void Aircraft::Remove()
 	m_show_explosion = false;
 }
 
-void Aircraft::CreatePickup(SceneNode& node, const TextureHolder& textures)
+void Aircraft::CreatePickup(SceneNode& node, const TextureHolder& textures) const
 {
 	auto type = static_cast<PickupType>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
 	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));

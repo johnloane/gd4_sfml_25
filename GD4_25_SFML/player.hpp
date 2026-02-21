@@ -4,13 +4,8 @@
 #include "action.hpp"
 #include <map>
 #include "command.hpp"
-#include "command.hpp"
-#include "action.hpp"
 #include "mission_status.hpp"
-#include <SFML/Window/Event.hpp>
-#include <map>
 #include "key_binding.hpp"
-#include "command_queue.hpp"
 #include <SFML/Network/TcpSocket.hpp>
 
 
@@ -29,7 +24,7 @@ public:
 	void SetMissionStatus(MissionStatus status);
 	MissionStatus GetMissionStatus() const;
 
-	void DisableAllRealtimeActions();
+	void DisableAllRealtimeActions(bool enable);
 	bool IsLocal() const;
 
 private:
@@ -40,7 +35,7 @@ private:
 	std::map<Action, Command> m_action_binding;
 	std::map<Action, bool> m_action_proxies;
 	MissionStatus m_current_mission_status;
-	int m_identifier;
+	uint8_t m_identifier;
 	sf::TcpSocket* m_socket;
 };
 

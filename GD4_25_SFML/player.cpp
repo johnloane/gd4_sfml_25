@@ -6,9 +6,6 @@
 #include <SFML/Network/Packet.hpp>
 
 #include <map>
-#include <string>
-#include <algorithm>
-#include <iostream>
 
 struct AircraftMover
 {
@@ -134,7 +131,7 @@ bool Player::IsLocal() const
     return m_key_binding != nullptr;
 }
 
-void Player::DisableAllRealtimeActions()
+void Player::DisableAllRealtimeActions(bool enable)
 {
     for (auto& action : m_action_proxies)
     {
@@ -142,7 +139,7 @@ void Player::DisableAllRealtimeActions()
         packet << static_cast<uint8_t>(Client::PacketType::kPlayerRealtimeChange);
         packet << m_identifier;
         packet << static_cast<uint8_t>(action.first);
-        packet << false;
+        packet << enable;
         m_socket->send(packet);
     }
 }

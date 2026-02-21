@@ -15,7 +15,7 @@ public:
 	~GameServer();
 	void NotifyPlayerSpawn(uint8_t aircraft_identifier);
 	void NotifyPlayerRealtimeChange(uint8_t aircraft_identifier, uint8_t action, bool action_enabled);
-	void NotifyPlayerEvent(uint8_t aircraft_identifier, int8_t action);
+	void NotifyPlayerEvent(uint8_t aircraft_identifier, uint8_t action);
 
 private:
 	struct RemotePeer

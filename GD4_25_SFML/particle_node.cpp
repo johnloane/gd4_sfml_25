@@ -99,8 +99,5 @@ void ParticleNode::ComputeVertices() const
 		AddVertex(pos.x + half.x, pos.y - half.y, size.x, 0.f, color);
 		AddVertex(pos.x + half.x, pos.y + half.y, size.x, size.y, color);
 		AddVertex(pos.x - half.x, pos.y + half.y, 0.f, size.y, color);
-
-
-
 	}
 }

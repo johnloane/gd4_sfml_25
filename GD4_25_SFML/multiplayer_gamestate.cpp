@@ -43,7 +43,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	, m_has_focus(true)
 	, m_host(is_host)
 	, m_game_started(false)
-	, m_client_timeout(sf::seconds(5.f))
+	, m_client_timeout(sf::seconds(1.f))
 	, m_time_since_last_packet(sf::seconds(0.f))
 	, m_broadcast_text(context.fonts->Get(FontID::kMain))
 	, m_player_invitation_text(context.fonts->Get(FontID::kMain))
@@ -75,9 +75,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
 	if (m_host)
 	{
-		std::cout << "Host creating a server" << std::endl;
 		m_game_server.reset(new GameServer(sf::Vector2f(m_window.getSize())));
-		std::cout << "Server created" << std::endl;
 		ip = sf::IpAddress::LocalHost;
 	}
 	else
@@ -92,8 +90,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 		if (status == sf::Socket::Status::Done)
 		{
 			m_connected = true;
-			// Set non-blocking ONLY after a successful connection
-			m_socket.setBlocking(false);
 		}
 		else
 		{
@@ -142,7 +138,11 @@ bool MultiplayerGameState::Update(sf::Time dt)
 	//Connected to the Server: Handle all the network logic
 	if (m_connected)
 	{
+		if(!m_active_state)
+			DisableAllRealtimeActions(true);
+
 		m_world.Update(dt);
+
 
 		//Remove players whose aircraft were destroyed
 		bool found_local_plane = false;
@@ -216,7 +216,7 @@ bool MultiplayerGameState::Update(sf::Time dt)
 
 		UpdateBroadcastMessage(dt);
 
-		//Time counter fro blinking second player text
+		//Time counter for blinking second player text
 		m_player_invitation_time += dt;
 		if (m_player_invitation_time > sf::seconds(1.f))
 		{
@@ -288,7 +288,7 @@ bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 		//If escape is pressed, show the pause screen
 		else if (key_pressed->scancode == sf::Keyboard::Scancode::Escape)
 		{
-			DisableAllRealtimeActions();
+			DisableAllRealtimeActions(false);
 			RequestStackPush(StateID::kNetworkPause);
 		}
 	}
@@ -319,12 +319,12 @@ void MultiplayerGameState::OnDestroy()
 	}
 }
 
-void MultiplayerGameState::DisableAllRealtimeActions()
+void MultiplayerGameState::DisableAllRealtimeActions(bool enable)
 {
-	m_active_state = false;
+	m_active_state = enable;
 	for (uint8_t identifier : m_local_player_identifiers)
 	{
-		m_players[identifier]->DisableAllRealtimeActions();
+		m_players[identifier]->DisableAllRealtimeActions(enable);
 	}
 }
 
@@ -379,6 +379,7 @@ void MultiplayerGameState::HandlePacket(uint8_t packet_type, sf::Packet& packet)
 		uint8_t aircraft_identifier;
 		sf::Vector2f aircraft_position;
 		packet >> aircraft_identifier >> aircraft_position.x >> aircraft_position.y;
+		std::cout << "Client kSpawnSelf" << +aircraft_identifier << std::endl;
 		Aircraft* aircraft = m_world.AddAircraft(aircraft_identifier);
 		aircraft->setPosition(aircraft_position);
 		m_players[aircraft_identifier].reset(new Player(&m_socket, aircraft_identifier, GetContext().keys1));
@@ -453,10 +454,11 @@ void MultiplayerGameState::HandlePacket(uint8_t packet_type, sf::Packet& packet)
 		uint8_t aircraft_identifier;
 		uint8_t action;
 		packet >> aircraft_identifier >> action;
-
+		std::cout << "Player Event" << aircraft_identifier << std::endl;
 		auto itr = m_players.find(aircraft_identifier);
 		if (itr != m_players.end())
 		{
+			std::cout << "Handling Network Event" << std::endl;
 			itr->second->HandleNetworkEvent(static_cast<Action>(action), m_world.GetCommandQueue());
 		}
 	}

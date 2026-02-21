@@ -20,6 +20,7 @@ PauseState::PauseState(StateStack& stack, Context context, bool lets_updates_thr
     returnButton->SetCallback([this]()
         {
             RequestStackPop();
+
         });
 
     auto backToMenuButton = std::make_shared<gui::Button>(context);

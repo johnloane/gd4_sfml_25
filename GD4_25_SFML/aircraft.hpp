@@ -14,8 +14,8 @@ public:
 	unsigned int GetCategory() const override;
 
 	void DisablePickups();
-	int GetIdentifier();
-	void SetIdentifier(int identifier);
+	uint8_t GetIdentifier();
+	void SetIdentifier(uint8_t identifier);
 	int GetMissileAmmo() const;
 	void SetMissileAmmo(int ammo);
 
@@ -29,8 +29,8 @@ public:
 	float GetMaxSpeed() const;
 	void Fire();
 	void LaunchMissile();
-	void CreateBullet(SceneNode& node, const TextureHolder& textures);
-	void CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures);
+	void CreateBullet(SceneNode& node, const TextureHolder& textures) const;
+	void CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures) const;
 
 	sf::FloatRect GetBoundingRect() const override;
 	bool IsMarkedForRemoval() const override;
@@ -43,7 +43,7 @@ private:
 
 	void CheckProjectileLaunch(sf::Time dt, CommandQueue& commands);
 	bool IsAllied() const;
-	void CreatePickup(SceneNode& node, const TextureHolder& textures);
+	void CreatePickup(SceneNode& node, const TextureHolder& textures) const;
 	void CheckPickupDrop(CommandQueue& commands);
 	void UpdateRollAnimation();
 
@@ -79,7 +79,7 @@ private:
 
 	bool m_pickups_enabled;
 
-	int m_identifier;
+	uint8_t m_identifier;
 
 };
 

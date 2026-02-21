@@ -12,3 +12,8 @@ void SpriteNode::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) 
 {
 	target.draw(m_sprite, states);
 }
+
+//unsigned int SpriteNode::GetCategory() const
+//{
+//	return static_cast<int>(ReceiverCategories::kNone);
+//}

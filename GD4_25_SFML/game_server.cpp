@@ -10,7 +10,7 @@
 GameServer::GameServer(sf::Vector2f battlefield_size)
     : m_thread(&GameServer::ExecutionThread, this)
     , m_listening_state(false)
-    , m_client_timeout(sf::seconds(5.f))
+    , m_client_timeout(sf::seconds(1.f))
     , m_max_connected_players(20)
     , m_connected_players(0)
     , m_world_height(5000.f)
@@ -54,9 +54,10 @@ void GameServer::NotifyPlayerRealtimeChange(uint8_t aircraft_identifier, uint8_t
 
 }
 
-void GameServer::NotifyPlayerEvent(uint8_t aircraft_identifier, int8_t action)
+void GameServer::NotifyPlayerEvent(uint8_t aircraft_identifier, uint8_t action)
 {
     sf::Packet packet;
+    std::cout << "Server: Notify Player Event" << +aircraft_identifier << +action << std::endl;
     //First thing in every is what type of packet it is
     packet << static_cast<uint8_t>(Server::PacketType::kPlayerEvent);
     packet << aircraft_identifier;
@@ -190,7 +191,7 @@ void GameServer::Tick()
                 SendToAll(packet);
             }
             m_last_spawn_time = Now();
-            m_time_for_next_spawn = sf::milliseconds(2000 + Utility::RandomInt(6000));
+            m_time_for_next_spawn = sf::milliseconds(2000 + Utility::RandomInt(4000));
         }
     }
 }
@@ -292,11 +293,9 @@ void GameServer::HandleIncomingPackets(sf::Packet& packet, RemotePeer& receiving
         {
             if (peer.get() != &receiving_peer && peer->m_ready)
             {
-
                 peer->m_socket.send(notify_packet);
             }
         }
-
         m_aircraft_identifier_counter++;
     }
     break;
@@ -354,7 +353,6 @@ void GameServer::HandleIncomingConnections()
 
     if (m_listener_socket.accept(m_peers[m_connected_players]->m_socket) == sf::TcpListener::Status::Done)
     {
-        std::cout << "Accepting connection" << std::endl;
         //Order the new client to spawn its player 1
         m_aircraft_info[m_aircraft_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.size.x / 2, m_battlefield_rect.position.y + m_battlefield_rect.size.y / 2);
         m_aircraft_info[m_aircraft_identifier_counter].m_hitpoints = 100;

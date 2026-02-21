@@ -3,6 +3,7 @@
 #include "resource_identifiers.hpp"
 #include "button_type.hpp"
 #include "state.hpp"
+#include "sound_player.hpp"
 #include <functional>
 
 namespace gui
