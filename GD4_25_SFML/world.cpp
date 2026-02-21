@@ -69,7 +69,7 @@ void World::Update(sf::Time dt)
 
 	m_scene_graph.Update(dt, m_command_queue);
 	AdaptPlayerPosition();
-	UpdateSounds();
+	//UpdateSounds();
 }
 
 

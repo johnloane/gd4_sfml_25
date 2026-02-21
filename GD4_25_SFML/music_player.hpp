@@ -13,6 +13,7 @@ class MusicPlayer
 {
 public:
 	MusicPlayer();
+	~MusicPlayer();
 
 	void Play(MusicThemes theme);
 	void Stop();

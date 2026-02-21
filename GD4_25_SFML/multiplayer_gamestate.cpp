@@ -106,6 +106,7 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
 	//Play the game music
 	context.music->Play(MusicThemes::kMissionTheme);
+	
 }
 
 void MultiplayerGameState::Draw()
